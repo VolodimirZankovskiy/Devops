@@ -1,0 +1,115 @@
+name: DevOps Lab 2 CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [api, stats]
+      fail-fast: false # Падіння одного сервісу не скасовує перевірку іншого
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          # Правильний шлях: заходимо в папку services, а потім у папку сервісу
+          cd services/${{ matrix.service }}
+          python -m pip install --upgrade pip
+          # Встановлюємо залежності, якщо є requirements.txt
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+          pip install ruff pytest
+
+      - name: Run Linter (Ruff)
+        run: |
+          cd services/${{ matrix.service }}
+          ruff check .
+
+      - name: Run Tests
+        run: |
+          cd services/${{ matrix.service }}
+          pytest
+
+  docker-build:
+    needs: build-and-test # Чекаємо на успішні тести
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [api, stats]
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          cd services/${{ matrix.service }}
+          docker build -t myapp-${{ matrix.service }}:${{ github.sha }} .
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'myapp-${{ matrix.service }}:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL'
+
+  docker-push:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' # Виконуємо публікацію тільки при Push
+    permissions:
+      packages: write
+      contents: read
+    strategy:
+      matrix:
+        service: [api, stats]
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }} # Токен генерується автоматично
+
+      - name: Build and push Docker images
+        run: |
+          cd services/${{ matrix.service }}
+          # Створюємо правильне ім'я для образу
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/taskmanager-${{ matrix.service }}
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          
+          # Збираємо з двома тегами: хеш коміту та latest
+          docker build -t $IMAGE_ID:${{ github.sha }} -t $IMAGE_ID:latest .
+          
+          # Пушимо образ із хешем коміту
+          docker push $IMAGE_ID:${{ github.sha }}
+          
+          # Пушимо latest тільки якщо це гілка main
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            docker push $IMAGE_ID:latest
+          fi
