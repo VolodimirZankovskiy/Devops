@@ -146,18 +146,6 @@ cd services/api
 MONGO_URI=mongodb://localhost:27017 pytest tests/test_integration.py -v
 docker stop test-mongo
 ```
-
-## Публікація в GitHub
-
-```bash
-git init
-git add .
-git commit -m "Lab 1: Dockerfile + docker-compose for taskmanager (api + stats + mongo)"
-git branch -M main
-git remote add origin <ваше-посилання-на-репозиторій>
-git push -u origin main
-```
-
 ## Відповідність вимогам лабораторної
 
 1. **Проєкт** — веб-додаток (Flask + PyMongo), що взаємодіє з базою даних
