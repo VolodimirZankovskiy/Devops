@@ -44,7 +44,7 @@ jobs:
       - name: Run Tests
         run: |
           cd services/${{ matrix.service }}
-          pytest
+          python -m pytest
 
   docker-build:
     needs: build-and-test # Чекаємо на успішні тести

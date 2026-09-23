@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -109,7 +109,7 @@ def create_app(mongo_client=None):
             "title": title,
             "description": data.get("description", ""),
             "status": data.get("status", "pending"),
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
         }
         result = tasks_collection.insert_one(task)
         task["_id"] = result.inserted_id
