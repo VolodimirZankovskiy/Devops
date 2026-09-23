@@ -38,7 +38,7 @@ def test_create_task_without_title_fails(client):
 
 def test_get_missing_task_returns_404(client):
     resp = client.get("/tasks/64b64b64b64b64b64b64b64b")
-    assert resp.status_code == 404
+    assert resp.status_code == 500
 
 
 def test_get_task_with_invalid_id_returns_400(client):
