@@ -37,7 +37,7 @@ def test_create_task_without_title_fails(client):
 
 
 def test_get_missing_task_returns_404(client):
-    resp = client.get("/tasks/64b64b64b64b64b64b64b64")
+    resp = client.get("/tasks/64b64b64b64b64b64b64b64b")
     assert resp.status_code == 404
 
 
@@ -66,7 +66,7 @@ def test_update_task(client):
 
 
 def test_update_task_not_found(client):
-    resp = client.put("/tasks/64b64b64b64b64b64b64b64", json={"status": "done"})
+    resp = client.put("/tasks/64b64b64b64b64b64b64b64b", json={"status": "done"})
     assert resp.status_code == 404
 
 
