@@ -28,7 +28,7 @@ def create_app(mongo_client=None):
             "info": {
                 "title": "Task Manager API",
                 "description": "CRUD API для управління задачами (Лаб. робота №1, DevOps).",
-                "version": "1.0.0",
+                "version": "1.1.0",
             }
         },
     )
