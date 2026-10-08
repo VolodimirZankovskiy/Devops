@@ -19,7 +19,7 @@ def create_app(mongo_client=None):
             "info": {
                 "title": "Task Manager Stats API",
                 "description": "Агрегована статистика по задачах (Лаб. робота №1, DevOps).",
-                "version": "1.0.0",
+                "version": "1.1.0",
             }
         },
     )
