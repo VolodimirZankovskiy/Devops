@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "taskmanager.fullname" . }}-test
+  labels:
+    {{- include "taskmanager.labels" (dict "root" . "component" "test") | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  containers:
+    - name: smoke-test
+      image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+      imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+      command: ["python", "-c"]
+      args:
+        - |
+          import sys
+          import urllib.request
+
+          urls = [
+              "http://{{ include "taskmanager.fullname" . }}-api:{{ .Values.api.service.port }}/health",
+              "http://{{ include "taskmanager.fullname" . }}-stats:{{ .Values.stats.service.port }}/health",
+          ]
+          for url in urls:
+              code = urllib.request.urlopen(url, timeout=5).status
+              print(url, code)
+              if code != 200:
+                  sys.exit(1)
+          print("OK: api and stats are healthy")

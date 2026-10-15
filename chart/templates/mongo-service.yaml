@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "taskmanager.fullname" . }}-mongo
+  labels:
+    {{- include "taskmanager.labels" (dict "root" . "component" "mongo") | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "taskmanager.selectorLabels" (dict "root" . "component" "mongo") | nindent 4 }}
+  ports:
+    - name: mongo
+      port: {{ .Values.mongo.service.port }}
+      targetPort: mongo
