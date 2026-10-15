@@ -109,7 +109,7 @@ def create_app(mongo_client=None):
             "title": title,
             "description": data.get("description", ""),
             "status": data.get("status", "pending"),
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": datetime.now(UTC).isoformat(),
         }
         result = tasks_collection.insert_one(task)
         task["_id"] = result.inserted_id
