@@ -1,0 +1,32 @@
+# "Продакшн": більше реплік і ресурсів, новіший тег, увімкнений Ingress.
+# Пароль тут навмисно порожній: його передають через --set secret.mongoRootPassword=...
+api:
+  replicaCount: 3
+  image:
+    tag: "1.1.0"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300mAdd-Content README.md "`n## Helm-чарт`n`nПараметри values, команди встановлення для dev і prod: див. [chart/README.md](chart/README.md)."
+      memory: 384Mi
+
+stats:
+  replicaCount: 2
+  image:
+    tag: "1.1.0"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 384Mi
+
+ingress:
+  enabled: true
+  host: taskmanager.local
+
+secret:
+  mongoRootPassword: ""

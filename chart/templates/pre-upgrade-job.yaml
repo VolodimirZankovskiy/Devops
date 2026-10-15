@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "taskmanager.fullname" . }}-pre-upgrade
+  labels:
+    {{- include "taskmanager.labels" (dict "root" . "component" "pre-upgrade") | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        {{- include "taskmanager.selectorLabels" (dict "root" . "component" "pre-upgrade") | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: db-check
+          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+          imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+          env:
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "taskmanager.fullname" . }}-secret
+                  key: MONGO_URI
+          command: ["python", "-c"]
+          args:
+            - |
+              import os
+              from pymongo import MongoClient
+
+              client = MongoClient(os.environ["MONGO_URI"], serverSelectionTimeoutMS=5000)
+              client.admin.command("ping")
+              print("pre-upgrade check: MongoDB is reachable, upgrade can proceed")

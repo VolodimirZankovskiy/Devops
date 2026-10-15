@@ -1,0 +1,19 @@
+Task Manager встановлено: реліз "{{ .Release.Name }}", namespace "{{ .Release.Namespace }}".
+
+1. Перевір, що всі поди запустились:
+     kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
+
+2. Відкрий застосунок (Swagger UI) через port-forward:
+     kubectl port-forward svc/{{ include "taskmanager.fullname" . }}-api 5000:{{ .Values.api.service.port }} -n {{ .Release.Namespace }}
+   потім відкрий у браузері http://127.0.0.1:5000/apidocs/
+
+3. Статистика (сервіс stats):
+     kubectl port-forward svc/{{ include "taskmanager.fullname" . }}-stats 5001:{{ .Values.stats.service.port }} -n {{ .Release.Namespace }}
+   потім http://127.0.0.1:5001/apidocs/
+{{- if .Values.ingress.enabled }}
+
+4. Ingress увімкнено. Додай у файл hosts рядок "<minikube ip> {{ .Values.ingress.host }}"
+   і перевір: curl http://{{ .Values.ingress.host }}/api/health
+{{- end }}
+
+Перевірка релізу:  helm test {{ .Release.Name }} -n {{ .Release.Namespace }} --logs
