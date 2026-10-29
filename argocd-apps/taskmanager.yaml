@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/ВАШ_ЛОГІН/taskmanager-devops.git'
+    repoURL: 'https://github.com/VolodimirZankovskiy/Devops.git'
     path: charts/taskmanager
     targetRevision: HEAD
   destination:

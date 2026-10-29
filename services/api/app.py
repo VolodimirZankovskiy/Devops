@@ -56,6 +56,11 @@ def create_app(mongo_client=None):
         except (InvalidId, TypeError):
             return None
 
+
+    @app.route('/version', methods=["GET"])
+    def version():
+        return {"version": "v1.0.0"}
+
     @app.get("/health")
     def health():
         """Перевірка стану сервісу
