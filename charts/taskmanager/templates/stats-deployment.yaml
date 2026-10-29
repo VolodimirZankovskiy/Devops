@@ -23,7 +23,7 @@ spec:
           imagePullPolicy: {{ .Values.stats.image.pullPolicy }}
           # Перевизначення команди для запуску статистики
           command: ["gunicorn"]
-          args: ["-b", "0.0.0.0:5001", "stats:app"]
+          args: ["-b", "0.0.0.0:5001", "app:app"]
           ports:
             - name: http
               containerPort: {{ .Values.stats.containerPort }}
