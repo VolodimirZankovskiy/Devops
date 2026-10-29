@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "taskmanager.labels" (dict "root" . "component" "pre-upgrade") | nindent 4 }}
   annotations:
-    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-weight": "0"
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
@@ -34,4 +34,4 @@ spec:
 
               client = MongoClient(os.environ["MONGO_URI"], serverSelectionTimeoutMS=5000)
               client.admin.command("ping")
-              print("pre-upgrade check: MongoDB is reachable, upgrade can proceed")
+              print("check: MongoDB is reachable, deployment successful")
