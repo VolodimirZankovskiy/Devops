@@ -1,6 +1,6 @@
 # Helm-чарт Task Manager (лабораторна робота №4)
 
-Чарт описує той самий застосунок, що й `k8s/` з лабораторної №3: сервіси
+Чарт описує той самий застосунок, що й `../../k8s` з лабораторної №3: сервіси
 `api` і `stats` та базу MongoDB. Набір об'єктів у кластері такий самий:
 ConfigMap, Secret, PVC, 3 Deployment, 3 Service, Ingress. Namespace в чарті
 не описується: його задає `helm install -n <ns> --create-namespace`.
@@ -107,7 +107,7 @@ Get-ChildItem chart -Recurse | Select-Object FullName
 * `Chart.yaml`: метадані (name, description, version, appVersion)
 * `values.yaml`: значення за замовчуванням (dev)
 * `templates/_helpers.tpl`: іменовані шаблони `taskmanager.fullname` (повне ім'я з імені релізу) і `taskmanager.labels` / `taskmanager.selectorLabels` (набір міток)
-* `templates/*.yaml`: по одному файлу на об'єкт, усі імена й мітки через `include`
+* `templates`: по одному файлу на об'єкт, усі імена й мітки через `include`
 * `templates/NOTES.txt`: підказка, яку Helm друкує після встановлення
 * `templates/secret.yaml`: значення беруться з `.Values.secret.*`, у шаблоні паролів немає
 
@@ -143,7 +143,7 @@ helm lint ./chart -f chart/values-prod.yaml --set secret.mongoRootPassword=x
 helm template taskmanager ./chart -f chart/values-dev.yaml | Select-String "^kind:"
 Get-ChildItem k8s
 ```
-Порівняй список `kind:` з файлами `k8s/` (лаба №3): ті самі об'єкти, окрім Namespace.
+Порівняй список `kind:` з файлами `../../k8s` (лаба №3): ті самі об'єкти, окрім Namespace.
 
 Встановлення:
 ```powershell
