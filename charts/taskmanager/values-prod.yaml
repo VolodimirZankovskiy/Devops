@@ -9,7 +9,7 @@ api:
       cpu: 100m
       memory: 128Mi
     limits:
-      cpu: 300mAdd-Content README.md "`n## Helm-чарт`n`nПараметри values, команди встановлення для dev і prod: див. [chart/README.md](chart/README.md)."
+      cpu: 300m
       memory: 384Mi
 
 stats:
