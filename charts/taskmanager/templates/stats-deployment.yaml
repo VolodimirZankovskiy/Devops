@@ -14,7 +14,6 @@ spec:
       labels:
         {{- include "taskmanager.labels" (dict "root" . "component" "stats") | nindent 8 }}
       annotations:
-        # Зміна ConfigMap або Secret призводить до перезапуску подів.
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
     spec:
@@ -22,6 +21,9 @@ spec:
         - name: stats
           image: "{{ .Values.stats.image.repository }}:{{ .Values.stats.image.tag }}"
           imagePullPolicy: {{ .Values.stats.image.pullPolicy }}
+          # Перевизначення команди для запуску статистики
+          command: ["gunicorn"]
+          args: ["-b", "0.0.0.0:5001", "stats:app"]
           ports:
             - name: http
               containerPort: {{ .Values.stats.containerPort }}
