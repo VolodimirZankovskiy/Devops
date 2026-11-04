@@ -4,7 +4,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 api:
-  replicaCount: 1
+  replicaCount: 2
   image:
     repository: tr1ton/taskmanager
     tag: "v1.0.0"
