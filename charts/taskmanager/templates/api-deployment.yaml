@@ -1,3 +1,4 @@
+{{- if not .Values.api.rollout.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,7 +15,6 @@ spec:
       labels:
         {{- include "taskmanager.labels" (dict "root" . "component" "api") | nindent 8 }}
       annotations:
-        # Зміна ConfigMap або Secret призводить до перезапуску подів.
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
     spec:
@@ -48,3 +48,4 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 15
+{{- end }}
